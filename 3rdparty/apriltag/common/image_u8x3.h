@@ -25,10 +25,11 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the Regents of The University of Michigan.
 */
 
-#pragma once
+#ifndef _IMAGE_U8X3_H
+#define _IMAGE_U8X3_H
 
 #include <stdint.h>
-#include "image_types.h"
+#include "common/image_types.h"
 
 #ifdef __cplusplus
 //extern "C" {
@@ -61,4 +62,6 @@ void image_u8x3_draw_line(image_u8x3_t *im, float x0, float y0, float x1, float 
 
 #ifdef __cplusplus
 //}
+#endif
+
 #endif

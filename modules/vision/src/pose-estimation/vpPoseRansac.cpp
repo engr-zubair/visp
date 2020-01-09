@@ -126,6 +126,10 @@ bool vpPose::RansacFunctor::poseRansacImpl()
   const unsigned int nbMinRandom = 4;
   int nbTrials = 0;
 
+#if defined(_WIN32) && (defined(_MSC_VER) || defined(__MINGW32__))
+  srand(m_initial_seed);
+#endif
+
   vpPoint p; // Point used to project using the estimated pose
 
   bool foundSolution = false;
@@ -158,12 +162,20 @@ bool vpPose::RansacFunctor::poseRansacImpl()
         break;
       }
 
-      // Pick a point randomly
-      unsigned int r_ = m_uniRand.uniform(0, size);
+// Pick a point randomly
+#if defined(_WIN32) && (defined(_MSC_VER) || defined(__MINGW32__)) || defined(ANDROID)
+      unsigned int r_ = (unsigned int)rand() % size;
+#else
+      unsigned int r_ = (unsigned int)rand_r(&m_initial_seed) % size;
+#endif
 
       while (usedPt[r_]) {
-        // If already picked, pick another point randomly
-        r_ = m_uniRand.uniform(0, size);
+// If already picked, pick another point randomly
+#if defined(_WIN32) && (defined(_MSC_VER) || defined(__MINGW32__)) || defined(ANDROID)
+        r_ = (unsigned int)rand() % size;
+#else
+        r_ = (unsigned int)rand_r(&m_initial_seed) % size;
+#endif
       }
       // Mark this point as already picked
       usedPt[r_] = true;

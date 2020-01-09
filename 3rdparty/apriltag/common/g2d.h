@@ -25,13 +25,14 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the Regents of The University of Michigan.
 */
 
-#pragma once
+#ifndef _G2D_H
+#define _G2D_H
 
 #ifdef __cplusplus
 //extern "C" {
 #endif
 
-#include "zarray.h"
+#include "common/zarray.h"
 
 // This library tries to avoid needless proliferation of types.
 //
@@ -121,4 +122,6 @@ int g2d_polygon_rasterize(const zarray_t *poly, double y, double *x);
 
 #ifdef __cplusplus
 //}
+#endif
+
 #endif

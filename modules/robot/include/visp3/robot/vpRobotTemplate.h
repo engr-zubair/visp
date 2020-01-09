@@ -33,66 +33,68 @@
  *
  * Authors:
  * Eric Marchand
- * Fabien Spindler
  *
  *****************************************************************************/
 
-#ifndef vpRobotTemplate_h
-#define vpRobotTemplate_h
+#ifndef vpRobotTemplate_H
+#define vpRobotTemplate_H
 
 /*!
   \file vpRobotTemplate.h
-  Defines a robot just to show which function you must implement.
+  \brief class that defines a robot just to show which function you must
+  implement
 */
 
-#include <visp3/core/vpConfig.h>
-
-
-#include <visp3/core/vpHomogeneousMatrix.h>
 #include <visp3/robot/vpRobot.h>
 
 /*!
-
   \class vpRobotTemplate
   \ingroup group_robot_real_template
-  \brief Class that defines a robot just to show which function you must implement.
-
+  \brief class that defines a robot just to show which function you must
+  implement
 */
+
 class VISP_EXPORT vpRobotTemplate : public vpRobot
 {
+
 public:
+  //! basic initialization
+  void init();
+
+  //! constructor
   vpRobotTemplate();
+  //! destructor
   virtual ~vpRobotTemplate();
 
-  void get_eJe(vpMatrix &eJe);
-  void get_fJe(vpMatrix &fJe);
+  //! get the robot Jacobian expressed in the end-effector frame
+  void get_eJe(vpMatrix &_eJe);
+  //! get the robot Jacobian expressed in the robot reference frame
+  void get_fJe(vpMatrix &_fJe);
 
-  /*!
-    Return constant transformation between end-effector and tool frame.
-    If your tool is a camera, this transformation is obtained by hand-eye calibration.
-   */
-  vpHomogeneousMatrix get_eMc() const { return m_eMc; }
-
-  void getDisplacement(const vpRobot::vpControlFrameType frame, vpColVector &q);
-  void getPosition(const vpRobot::vpControlFrameType frame, vpColVector &q);
-
-  /*!
-    Set constant transformation between end-effector and tool frame.
-    If your tool is a camera, this transformation is obtained by hand-eye calibration.
-   */
-  void set_eMc(vpHomogeneousMatrix &eMc) { m_eMc = eMc; }
-  void setPosition(const vpRobot::vpControlFrameType frame, const vpColVector &q);
+  //! send to the controller a velocity expressed in the camera frame
+  void sendCameraVelocity(const vpColVector &v);
+  //! send to the controller a velocity expressed in the articular frame
+  void sendArticularVelocity(const vpColVector &qdot);
+  //! send to the controller a velocity (frame as to be specified)
   void setVelocity(const vpRobot::vpControlFrameType frame, const vpColVector &vel);
 
-protected:
-  void init();
-  void getJointPosition(vpColVector &q);
-  void setCartVelocity(const vpRobot::vpControlFrameType frame, const vpColVector &v);
-  void setJointVelocity(const vpColVector &qdot);
+  //! get a position expressed in the robot reference frame
+  void getPosition(vpPoseVector &q);
+  //! get a position expressed in the articular frame
+  void getArticularPosition(vpColVector &q);
+  //! get a displacement (frame as to be specified)
+  void getPosition(const vpRobot::vpControlFrameType frame, vpColVector &q);
+  //! set a displacement (frame as to be specified)
+  void setPosition(const vpRobot::vpControlFrameType frame, const vpColVector &q);
 
-protected:
-  vpHomogeneousMatrix m_eMc; //!< Constant transformation between end-effector and tool (or camera) frame
+  //! get a displacement (frame as to be specified)
+  void getDisplacement(const vpRobot::vpControlFrameType frame, vpColVector &q);
 };
 
 #endif
 
+/*
+ * Local variables:
+ * c-basic-offset: 2
+ * End:
+ */

@@ -1119,7 +1119,8 @@ void vpFlyCaptureGrabber::acquire(vpImage<unsigned char> &I, FlyCapture2::TimeSt
   error = m_camera.RetrieveBuffer(&m_rawImage);
   if (error != FlyCapture2::PGRERROR_OK) {
     error.PrintErrorTrace();
-    std::cerr << "Cannot retrieve image from camera with serial " << getCameraSerial(m_index) << std::endl;
+    throw(vpException(vpException::fatalError, "Cannot retrieve image from camera with serial %u",
+                      getCameraSerial(m_index)));
   }
   timestamp = m_rawImage.GetTimeStamp();
 
@@ -1170,7 +1171,8 @@ void vpFlyCaptureGrabber::acquire(vpImage<vpRGBa> &I, FlyCapture2::TimeStamp &ti
   error = m_camera.RetrieveBuffer(&m_rawImage);
   if (error != FlyCapture2::PGRERROR_OK) {
     error.PrintErrorTrace();
-    std::cerr << "Cannot retrieve image from camera with serial " << getCameraSerial(m_index) << std::endl;
+    throw(vpException(vpException::fatalError, "Cannot retrieve image from camera with serial %u",
+                      getCameraSerial(m_index)));
   }
   timestamp = m_rawImage.GetTimeStamp();
 

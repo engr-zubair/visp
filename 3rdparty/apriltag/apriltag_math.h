@@ -25,7 +25,8 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the Regents of The University of Michigan.
 */
 
-#pragma once
+#ifndef _APRILTAG_MATH_H
+#define _APRILTAG_MATH_H
 
 #include <math.h>
 
@@ -99,3 +100,5 @@ static inline void mat33_sym_solve(const double *A,
     R[1] = M[4]*tmp[1] + M[7]*tmp[2];
     R[2] = M[8]*tmp[2];
 }
+
+#endif

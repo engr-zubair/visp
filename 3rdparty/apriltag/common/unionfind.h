@@ -25,7 +25,8 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the Regents of The University of Michigan.
 */
 
-#pragma once
+#ifndef _UNIONFIND_H
+#define _UNIONFIND_H
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -144,3 +145,4 @@ static inline uint32_t unionfind_connect(unionfind_t *uf, uint32_t aid, uint32_t
         return broot;
     }
 }
+#endif

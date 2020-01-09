@@ -25,7 +25,8 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the Regents of The University of Michigan.
 */
 
-#pragma once
+#ifndef _PNM_H
+#define _PNM_H
 
 #include <stdint.h>
 
@@ -55,4 +56,6 @@ void pnm_destroy(pnm_t *pnm);
 
 #ifdef __cplusplus
 //}
+#endif
+
 #endif

@@ -25,7 +25,8 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the Regents of The University of Michigan.
 */
 
-#pragma once
+#ifndef _ZHASH_H
+#define _ZHASH_H
 
 #include <stdint.h>
 
@@ -429,4 +430,6 @@ static inline int zhash_int_equals(const void *_a, const void *_b)
 
 #ifdef __cplusplus
 //}
+#endif
+
 #endif

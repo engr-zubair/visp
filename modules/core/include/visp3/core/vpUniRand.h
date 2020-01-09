@@ -29,44 +29,17 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  *
  * Description:
- * Pseudo random number generator.
+ * Generation of random number with uniform and normal probability density.
+ *
+ * Authors:
+ * Eric Marchand
  *
  *****************************************************************************/
- /*
-  * PCG Random Number Generation for C.
-  *
-  * Copyright 2014 Melissa O'Neill <oneill@pcg-random.org>
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  *     http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  * For additional information about the PCG random number generation scheme,
-  * including its license and other licensing options, visit
-  *
-  *     http://www.pcg-random.org
-  */
 
-  /*
-   * This code is derived from the full C implementation, which is in turn
-   * derived from the canonical C++ PCG implementation. The C++ version
-   * has many additional features and is preferable if you can use C++ in
-   * your project.
-   */
-
-#ifndef _vpUniRand_h_
-#define _vpUniRand_h_
+#ifndef vpUniRand_hh
+#define vpUniRand_hh
 
 #include <visp3/core/vpConfig.h>
-#include <inttypes.h>
 
 /*!
   \class vpUniRand
@@ -74,7 +47,7 @@
   \ingroup group_core_random
   \brief Class for generating random numbers with uniform probability density.
 
-  The algorithms and notations used are described in \cite oneill:pcg2014.
+  The algorithms and notations used are described in \cite Gentle:2004.
 
   The following example shows how to use this class to generate 10 numbers between 0 and 5.
 \code
@@ -83,47 +56,40 @@
 
 int main()
 {
-  vpUniRand rng;
-  for (int i = 0; i < 10; i++) {
-    std::cout << rng.uniform(0, 6) << std::endl; // produces int values
-    std::cout << rng.uniform(0.0, 6.0) << std::endl; // produces double values
-  }
+  vpUniRand r;
+  for(unsigned int i=0;i<10;++i)
+    std::cout << 5*r() << std::endl;
 }
 \endcode
-*/
+ */
 class VISP_EXPORT vpUniRand
 {
-private:
-  struct pcg_state_setseq_64 {  // Internals are *Private*.
-    uint64_t state;             // RNG state.  All values are possible.
-    uint64_t inc;               // Controls which RNG sequence (stream) is
-                                // selected. Must *always* be odd.
+  long a;
+  long m;            // 2^31-1
+  long q;            // integer part of m/a
+  long r;            // r=m mod a
+  double normalizer; // we use a normalizer > m to ensure ans will never be 1
+                     // (it is the case if x = 739806647)
 
-    pcg_state_setseq_64(uint64_t state_ = 0x853c49e6748fea9bULL, uint64_t inc_ = 0xda3e39cb94b95bdbULL) :
-      state(state_), inc(inc_)
-    {
-    }
-  };
-  typedef struct pcg_state_setseq_64 pcg32_random_t;
+private:
+  void draw0();
+
+protected:
+  long x;
+  double draw1();
 
 public:
-  vpUniRand();
-  vpUniRand(uint64_t seed, uint64_t seq=0x123465789ULL);
+  //! Default constructor.
+  explicit vpUniRand(const long seed = 0)
+    : a(16807), m(2147483647), q(127773), r(2836), normalizer(2147484721.0), x((seed) ? seed : 739806647)
+  {
+  }
 
-  double operator()();
+  //! Default destructor.
+  virtual ~vpUniRand(){};
 
-  uint32_t next();
-  int uniform(int a, int b);
-  float uniform(float a, float b);
-  double uniform(double a, double b);
-  void setSeed(uint64_t initstate, uint64_t initseq);
-
-private:
-  uint32_t boundedRand(uint32_t bound);
-
-  double m_maxInvDbl;
-  float m_maxInvFlt;
-  pcg32_random_t m_rng;
+  //! Operator that allows to get a random value.
+  double operator()() { return draw1(); }
 };
 
 #endif

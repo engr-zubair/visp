@@ -25,8 +25,11 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the Regents of The University of Michigan.
 */
 
-#pragma once
+#ifndef _FLOATS_H
+#define _FLOATS_H
 
 #define TNAME float
 #include "doubles_floats_impl.h"
 #undef TNAME
+
+#endif
