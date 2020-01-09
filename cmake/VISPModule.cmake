@@ -1011,11 +1011,7 @@ macro(vp_add_tests)
           # ctest only if not in the exclude list
           list(FIND __exclude_ctest ${t} __to_exclude_from_ctest)
           if(${__to_exclude_from_ctest} EQUAL -1)
-            if(${t} MATCHES "perf*")
-              add_test(${the_target} ${the_target})
-            else()
-              add_test(${the_target} ${the_target} -c ${OPTION_TO_DESACTIVE_DISPLAY})
-            endif()
+            add_test(${the_target} ${the_target} -c ${OPTION_TO_DESACTIVE_DISPLAY})
           endif()
           # TODO FS add visp_test_${name} target to group all the tests
           add_dependencies(visp_tests ${the_target})

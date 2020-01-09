@@ -25,7 +25,8 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the Regents of The University of Michigan.
 */
 
-#pragma once
+#ifndef _MATHUTIL_H
+#define _MATHUTIL_H
 
 #include <math.h>
 #include <float.h>
@@ -52,6 +53,7 @@ either expressed or implied, of the Regents of The University of Michigan.
 #ifndef max
 #define max(A, B) (A < B ? B : A)
 #endif
+
 #ifndef min
 #define min(A, B) (A < B ? A : B)
 #endif
@@ -92,7 +94,7 @@ static inline double sgn(double v)
 // random number between [0, 1)
 static inline float randf()
 {
-    return (float)(rand() / (RAND_MAX + 1.0f));
+    return ((float) rand()) / (RAND_MAX + 1.0f);
 }
 
 
@@ -245,4 +247,6 @@ static inline float float_neg_inf() {
 
 #ifdef __cplusplus
 //}
+#endif
+
 #endif

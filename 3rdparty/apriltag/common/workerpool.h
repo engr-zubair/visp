@@ -25,7 +25,8 @@ of the authors and should not be interpreted as representing official policies,
 either expressed or implied, of the Regents of The University of Michigan.
 */
 
-#pragma once
+#ifndef _WORKERPOOL_H
+#define _WORKERPOOL_H
 
 #include "zarray.h"
 
@@ -47,3 +48,5 @@ void workerpool_run_single(workerpool_t *wp);
 int workerpool_get_nthreads(workerpool_t *wp);
 
 int workerpool_get_nprocs();
+
+#endif

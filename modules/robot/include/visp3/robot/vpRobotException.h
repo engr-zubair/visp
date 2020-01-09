@@ -120,11 +120,7 @@ public:
     notImplementedError,
     /** Position is out of range.
      */
-    positionOutOfRangeError,
-    /*!
-      Signal exception returned after SIGINT (CTRL-C), SIGBUS, SIGSEGV, SIGSEGV (CTRL-\), SIGQUIT.
-    */
-    signalException
+    positionOutOfRangeError
   };
 
 public:

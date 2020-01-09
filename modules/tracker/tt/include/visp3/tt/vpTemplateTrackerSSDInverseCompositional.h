@@ -59,12 +59,21 @@ protected:
   bool compoInitialised;
   vpMatrix HInv;
   vpMatrix HCompInverse;
-  bool useTemplateSelect; // use only the strong gradient pixels to compute the Jabocian
+  bool useTemplateSelect; // use only the strong gradient pixels to compute
+                          // the Jabocian
+  // pour eval evolRMS
+  double evolRMS;
+  std::vector<double> x_pos;
+  std::vector<double> y_pos;
+  double threshold_RMS;
 
 protected:
   void initHessienDesired(const vpImage<unsigned char> &I);
   void initCompInverse(const vpImage<unsigned char> &I);
   void trackNoPyr(const vpImage<unsigned char> &I);
+  void deletePosEvalRMS();
+  void computeEvalRMS(const vpColVector &p);
+  void initPosEvalRMS(const vpColVector &p);
 
 public:
   explicit vpTemplateTrackerSSDInverseCompositional(vpTemplateTrackerWarp *warp);
@@ -72,5 +81,6 @@ public:
   /*! Use only the strong gradient pixels to compute the Jabobian. By default
    * this feature is disabled. */
   void setUseTemplateSelect(bool b) { useTemplateSelect = b; }
+  void setThresholdRMS(double threshold) { threshold_RMS = threshold; }
 };
 #endif
