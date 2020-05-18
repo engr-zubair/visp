@@ -1,0 +1,139 @@
+//include headers 
+// 	void display_trajectory() // function form visp
+	int main(int argc, const char *argv[]){
+	//load options//
+	//load camera with opencv grabber visp //
+	//load tracker and start tracking // 
+	// tracker will provide us a bonding box, vppolygon class and cog //
+	// we do not have access to tags 3d details, depth-map or actual side length//
+	// now we will use this tracker bonding box vpimage point details to create an image based visual servo control// 
+	//try {
+    vpHomogeneousMatrix cdMo(0, 0, 0.1, 0, vpMath::rad(0), vpMath::rad(00)); // cam desired pose //
+	vpHomogeneousMatrix cMo(0.15, -0.3, 1., vpMath::rad(10), vpMath::rad(-10), vpMath::rad(90)); //cam initial pose //
+    
+    vpCameraParameters cam; // initiate cam and set parameters any or for usb cam //
+	//cam.initPersProjWithoutDistortion(840, 840, I.getWidth() / 2., I.getHeight() / 2.);
+    cam.initPersProjWithoutDistortion(615.1674805, 615.1675415, I.getWidth() / 2., I.getHeight() / 2.);
+
+	vpFeaturePoint s_x, s_xd,cog; // used from april tag mbot 2-1/2 VS // not applied in code //
+    vpImagePoint cog1;
+        double Z, Z_d;
+        Z = Z_d = 0.5;
+		
+	cog1 = detector.getCog(0); detectror is providing us these //
+    vpFeatureBuilder::create(cog, cam,detector.getCog(0)); //successfull//
+	
+    vpRect bbox = detector.getBBox(0); // successful//
+    
+    vpPolygon polygon(detector.getPolygon(0)); // successful//
+    std::vector<vpImagePoint> vec_ip = detector.getPolygon(0); // successful//
+    vpImagePoint pp[4];
+
+    pp[0] = vec_ip[1]; // used this for creating vpimage point from bbox//
+    pp[1] = vec_ip[2];
+    pp[2] = vec_ip[3];
+    pp[3] = vec_ip[4];
+	
+	
+    //vpFeatureBuilder::create(s_x, cam, vec_ip.back());
+    //s_x.set_Z(Z);
+
+    /* tried this to get points out of bbox but not succeeded //
+    vpImagePoint a, b, c, d;
+    a = fbox.getTopLeft();
+    b = fbox.getBottomRight();
+    c = fbox.getCenter();
+    vpImagePoint d = fbox.getCenter() + 0.05;
+        */
+
+	std::vector<vpPoint> point;
+    point.push_back(vpPoint(-0.1, -0.1, 0));
+	point.push_back(vpPoint(0.1, -0.1, 0));
+    point.push_back(vpPoint(0.1, 0.1, 0));
+    point.push_back(vpPoint(-0.1, 0.1, 0));
+	
+    vpServo task;
+    task.setServo(vpServo::EYEINHAND_CAMERA);
+    task.setInteractionMatrixType(vpServo::CURRENT);
+    task.setLambda(0.5);
+
+    vpFeaturePoint p[4], pd[4];
+    
+    for (unsigned int i = 0; i < 4; i++) {
+      //point[i].track(cdMo);
+      //vpFeatureBuilder::create(pd[i], point[i]);
+      vpFeatureBuilder::create(pd[i], cam, pp[i]); //used vpimage point pp[i] to add task feature//
+      //point[i].track(cMo);
+      //vpFeatureBuilder::create(p[i], point[i]);
+      vpFeatureBuilder::create(p[i], cam, pp[i]); //used vpimage point pp[i] to add task feature//
+      //vpFeatureBuilder::create(cog1, cam,detector.getCog(0)); 
+      vpColVector cP;
+      point[i].changeFrame(cMo, cP);
+      task.addFeature(p[i], pd[i]); // not able to add cog as task feature //
+      //p[i].set_Z(cP[2]);
+      p[i].set_Z(0.5);
+    }
+    
+    vpHomogeneousMatrix wMc, wMo;
+    vpSimulatorCamera robot;
+    robot.setSamplingTime(0.040);
+    robot.getPosition(wMc);
+    wMo = wMc * cMo;
+
+    vpImage<unsigned char> Iint(480, 640, 255);
+    vpImage<unsigned char> Iext(480, 640, 255);
+#if defined(VISP_HAVE_X11)
+    vpDisplayX displayInt(Iint, 0, 0, "Internal view");
+    vpDisplayX displayExt(Iext, 670, 0, "External view");
+#elif defined(VISP_HAVE_GDI)
+    vpDisplayGDI displayInt(Iint, 0, 0, "Internal view");
+    vpDisplayGDI displayExt(Iext, 670, 0, "External view");
+#elif defined(VISP_HAVE_OPENCV)
+    vpDisplayOpenCV displayInt(Iint, 0, 0, "Internal view");
+    vpDisplayOpenCV displayExt(Iext, 670, 0, "External view");
+#else
+    std::cout << "No image viewer is available..." << std::endl;
+#endif
+
+#if defined(VISP_HAVE_DISPLAY)
+    vpProjectionDisplay externalview;
+    for (unsigned int i = 0; i < 4; i++)
+     externalview.insert(point[i]); // it doenot support vpimage point to display //
+    //externalview.insert(detector.getCog);// not able to use this feature in external view//
+    // externalview.insert(vec_ip[i]);
+#endif
+    vpCameraParameters cam1(840, 840, Iint.getWidth() / 2, Iint.getHeight() / 2);
+    vpHomogeneousMatrix cextMo(0, 0, 3, 0, 0, 0);
+
+    while (1) {
+      robot.getPosition(wMc); 
+      cMo = wMc.inverse() * wMo;
+      for (unsigned int i = 0; i < 4; i++) {
+        point[i].track(cMo);
+        vpFeatureBuilder::create(p[i], point[i]);
+      }
+      vpColVector v = task.computeControlLaw();
+      robot.setVelocity(vpRobot::CAMERA_FRAME, v);
+
+      vpDisplay::display(Iint);
+      vpDisplay::display(Iext);
+      display_trajectory(Iint,point, cMo, cam1);
+
+      vpServoDisplay::display(task, cam1, Iint, vpColor::green, vpColor::red);
+#if defined(VISP_HAVE_DISPLAY)
+      externalview.display(Iext, cextMo, cMo, cam1, vpColor::red, true);
+#endif
+      vpDisplay::flush(Iint);
+      vpDisplay::flush(Iext);
+
+      // A click to exit
+      if (vpDisplay::getClick(Iint, false) || vpDisplay::getClick(Iext, false))
+        break;
+
+      vpTime::wait(robot.getSamplingTime() * 1000);
+    }
+    task.kill();
+  } //catch (const vpException &e) {
+    //std::cout << "Catch an exception: " << e << std::endl;
+  //}
+//}
